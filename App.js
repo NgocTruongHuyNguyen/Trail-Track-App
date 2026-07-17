@@ -5,8 +5,8 @@ import { supabase } from './app/lib/supabase'
 import { useAuthStore } from './app/store/authStore'
 import LoginScreen from './app/screens/LoginScreen'
 import SignupScreen from './app/screens/SignupScreen'
-// import MapScreen from './app/screens/MapScreen'
-// import TrackDetailScreen from './app/screens/TrackDetailScreen'
+import MapScreen from './app/screens/MapScreen'
+import TrackDetailScreen from './app/screens/TrackDetailScreen'
 
 const Stack = createNativeStackNavigator()
 
