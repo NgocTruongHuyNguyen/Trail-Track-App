@@ -7,6 +7,7 @@ export type Track = {
   difficulty: string
   distance_km: number
   status: string
+  activity_type: string
   path: { latitude: number; longitude: number }[]
 }
 
@@ -19,13 +20,17 @@ export type Completion = {
 
 interface TrackState {
   tracks: Track[]
-  completions: Record<string, Completion> // keyed by track_id
+  completions: Record<string, Completion>
   loaded: boolean
   loading: boolean
   error: string
+  activeFilters: Set<string> // which activity_types are currently visible
   loadInitialData: (userId: string) => Promise<void>
   setCompletion: (completion: Completion) => void
+  toggleFilter: (activityType: string) => void
 }
+
+const ALL_ACTIVITY_TYPES = ['walking', 'tramping', 'mountain_biking', 'historic']
 
 export const useTrackStore = create<TrackState>((set, get) => ({
   tracks: [],
@@ -33,16 +38,16 @@ export const useTrackStore = create<TrackState>((set, get) => ({
   loaded: false,
   loading: false,
   error: '',
+  activeFilters: new Set(ALL_ACTIVITY_TYPES), // all shown by default
 
   loadInitialData: async (userId: string) => {
-    if (get().loaded) return // already loaded — skip entirely, no network call
+    if (get().loaded) return
     set({ loading: true, error: '' })
 
     const { data: trackData, error: trackError } = await supabase
       .from('tracks')
-      .select('id, name, difficulty, distance_km, status, path')
+      .select('id, name, difficulty, distance_km, status, activity_type, path')
       .eq('status', 'OPEN')
-      .limit(300)
 
     if (trackError) {
       set({ error: trackError.message, loading: false })
@@ -72,10 +77,21 @@ export const useTrackStore = create<TrackState>((set, get) => ({
     })
   },
 
-  // Called immediately after a successful insert/update — no refetch needed
   setCompletion: (completion: Completion) => {
     set((state) => ({
       completions: { ...state.completions, [completion.track_id]: completion },
     }))
+  },
+
+  toggleFilter: (activityType: string) => {
+    set((state) => {
+      const next = new Set(state.activeFilters)
+      if (next.has(activityType)) {
+        next.delete(activityType)
+      } else {
+        next.add(activityType)
+      }
+      return { activeFilters: next }
+    })
   },
 }))

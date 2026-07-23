@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Pressable, TextInput, ActivityIndicator, Platform } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { supabase } from '../lib/supabase'
 import { useAuthStore } from '../store/authStore'
 import { useTrackStore } from '../store/trackStore'
 import { getDifficultyColor } from '../lib/trackColors'
+import { fetchWeather, getWeatherEmoji, WeatherData } from '../lib/weather'
+
 
 export default function TrackDetailScreen({ route, navigation }: any) {
   const { track, completion } = route.params
@@ -19,6 +21,24 @@ export default function TrackDetailScreen({ route, navigation }: any) {
   const [notes, setNotes] = useState(completion?.notes || '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  const [weather, setWeather] = useState<WeatherData | null>(null)
+  const [weatherLoading, setWeatherLoading] = useState(true)  
+
+  useEffect(() => {
+  const loadWeather = async () => {
+    // Use the midpoint of the track's path as a representative location
+    const midpoint = track.path[Math.floor(track.path.length / 2)]
+      if (!midpoint) {
+        setWeatherLoading(false)
+        return
+      }
+      const data = await fetchWeather(midpoint.latitude, midpoint.longitude)
+      setWeather(data)
+      setWeatherLoading(false)
+    }
+    loadWeather()
+  }, [track.id])
 
   const handleSave = async () => {
     setLoading(true)
@@ -74,6 +94,23 @@ export default function TrackDetailScreen({ route, navigation }: any) {
           </Pressable>
         </View>
       )}
+
+      <View style={styles.weatherBox}>
+        {weatherLoading ? (
+          <ActivityIndicator size="small" />
+        ) : weather ? (
+          <>
+            <Text style={styles.weatherEmoji}>{getWeatherEmoji(weather.weatherCode, weather.isDay)}</Text>
+            <View>
+              <Text style={styles.weatherTemp}>{Math.round(weather.temperature)}°C</Text>
+              <Text style={styles.weatherDesc}>{weather.description}</Text>
+              <Text style={styles.weatherWind}>Wind: {Math.round(weather.windSpeed)} km/h</Text>
+            </View>
+          </>
+        ) : (
+          <Text style={styles.weatherUnavailable}>Weather unavailable</Text>
+        )}
+      </View>
 
       {showForm && (
         <View style={styles.form}>
@@ -153,4 +190,20 @@ const styles = StyleSheet.create({
   buttonText: { color: 'white', fontWeight: '600', fontSize: 16 },
   difficultyBadge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6, marginTop: 8, marginBottom: 8 },
   difficultyBadgeText: { color: 'white', fontWeight: '700', fontSize: 12 },
+  weatherBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#eff6ff',
+    borderRadius: 10,
+    padding: 12,
+    marginTop: 4,
+    marginBottom: 12,
+    gap: 12,
+  },
+  weatherEmoji: { fontSize: 36 },
+  weatherTemp: { fontSize: 20, fontWeight: '700', color: '#1e3a8a' },
+  weatherDesc: { fontSize: 13, color: '#374151' },
+  weatherWind: { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  weatherUnavailable: { fontSize: 13, color: '#999', fontStyle: 'italic' },
 })
+
