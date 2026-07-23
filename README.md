@@ -56,16 +56,14 @@ current weather conditions before heading out.
    \`\`\`
 
 ## Project Structure
-\`\`\`
-app/
-  screens/       # Login, Signup, Map, TrackDetail, UserDetail
-  navigation/     # Tab/stack navigator setup
-  store/          # Zustand stores (auth, tracks, profile)
-  lib/            # Supabase client, weather API, color/icon helpers
-  hooks/          # useUserLocation
-script/
-  import-doc-tracks.js   # Pulls track data from DOC ArcGIS API
-\`\`\`
+- app/
+  - screens/       # Login, Signup, Map, TrackDetail, UserDetail
+  - navigation/     # Tab/stack navigator setup
+  - store/          # Zustand stores (auth, tracks, profile)
+  - lib/            # Supabase client, weather API, color/icon helpers
+  - hooks/          # useUserLocation
+- script/
+  - import-doc-tracks.js   # Pulls track data from DOC ArcGIS API
 
 ## Data Attribution
 Track data sourced from the Department of Conservation (DOC) Te Papa Atawhai, 
