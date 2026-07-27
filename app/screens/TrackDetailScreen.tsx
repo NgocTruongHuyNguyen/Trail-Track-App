@@ -73,7 +73,7 @@ export default function TrackDetailScreen({ route, navigation }: any) {
     <View style={styles.container}>
       <Text style={styles.name}>{track.name}</Text>
       <Text style={styles.meta}>Distance: {track.distance_km} km</Text>
-      <Text style={styles.meta}>Difficulty: {track.difficulty}</Text>
+      <Text style={styles.meta}>Status: {track.status}</Text>
       <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(track.difficulty) }]}>
         <Text style={styles.difficultyBadgeText}>{track.difficulty.toUpperCase()}</Text>
       </View>
