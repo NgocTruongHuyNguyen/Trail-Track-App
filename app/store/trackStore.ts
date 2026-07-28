@@ -30,7 +30,7 @@ interface TrackState {
   toggleFilter: (activityType: string) => void
 }
 
-const ALL_ACTIVITY_TYPES = ['walking', 'tramping', 'mountain_biking', 'historic']
+const ALL_ACTIVITY_TYPES = ['walking', 'tramping', 'mountain_biking']
 
 export const useTrackStore = create<TrackState>((set, get) => ({
   tracks: [],

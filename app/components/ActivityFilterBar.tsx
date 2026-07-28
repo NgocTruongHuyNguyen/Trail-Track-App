@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTrackStore } from '../store/trackStore'
 import { getActivityIcon, getActivityLabel } from '../lib/activityIcons'
 
-const FILTER_OPTIONS = ['walking', 'tramping', 'mountain_biking', 'historic']
+const FILTER_OPTIONS = ['walking', 'tramping', 'mountain_biking']
 
 export default function ActivityFilterBar() {
   const { activeFilters, toggleFilter } = useTrackStore()
